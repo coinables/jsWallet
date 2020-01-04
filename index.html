@@ -2,7 +2,6 @@
 <html>
 <head>
 <link rel="stylesheet" href="bootswatch.css">
-<script src="addresses.js"></script>
 <script src="jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="bitcoin.js"></script>
 <!-- buidl.js (bitcoinjs-lib wrapper) -->
@@ -414,7 +413,7 @@ function navTxs(){
 
 //new address
 function newAddr(){
-	let makeAddr = bjs.triAddress();
+	let makeAddr = buidl.getNewAddress();
 	let legacy = makeAddr.p2pkh;
 	let nativesw = makeAddr.p2wpkh;
 	let p2shsw = makeAddr.p2shp2wpkh;
@@ -429,7 +428,7 @@ function newAddr(){
 //load from wif
 function loadfromwif(){
 	var pk = document.getElementById("pkey").value;
-	var makeAddr = bjs.getDetails(pk);
+	var makeAddr = buidl.getDetails(pk);
 	var legacy = makeAddr.p2pkh;
 	var nativesw = makeAddr.p2wpkh;
 	var p2shsw = makeAddr.p2shp2wpkh;
