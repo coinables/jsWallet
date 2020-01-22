@@ -14,11 +14,16 @@
 	background-color: #ccc;
 }
 .wideinput{
-	width: 500px;
+	width: 400px;
 }
 html,body{
     margin: 3px;
     padding: 3px;
+}
+.outputheader{
+	background-color: #1e1e1e;
+	color: #e2e2e2;
+	font-weight: bold;
 }
 </style>
 </head>
@@ -42,7 +47,7 @@ html,body{
     <p><b>Balance</b></p>
 	<input type="text" id="walletbal" readonly><br>
 	<p><b>Details</b></p>
-	<textarea id="txhist" cols="140" rows="25"></textarea>
+	<div id="txhist"></div>
   </div>
   <div class="tab-pane fade" id="addresses">
   <br>
@@ -102,8 +107,38 @@ html,body{
 			 fullbtcs.toFixed(8);
 			 
 			 $("#walletbal").val(fullbtcs);
-			 $("#txhist").html(JSON.stringify(result.data.addresses, null, 2));
-			 //console.log(result.data.addresses);
+			 
+			 var historyreturn = result.data.addresses;
+			 var balanceslength = Object.keys(historyreturn).length;
+			 
+			 console.log(historyreturn);
+			 
+			 var outhtml = '<table><tr><td class="outputheader wideinput">Address</td><td class="outputheader">Satoshis</td><td class="outputheader">Received</td><td class="outputheader">First Seen</td><td class="outputheader">Last Spent</td><td class="outputheader">Label</td></tr>';
+			 
+			 for(var i=0;i<balanceslength;i++){
+			 
+				var keystoragelen = allStorage().length;
+				var keylabel = "";
+		
+				for(var ii=0;ii<keystoragelen;ii++){
+					var parsepair = JSON.parse(allStorage()[ii]);
+					
+					var loopp2pkh = parsepair.p2pkh;
+					var loopbech32 = parsepair.bech32;
+					var loopp2sh = parsepair.p2sh;
+					var addrarr = [];
+					addrarr.push(loopp2pkh,loopbech32,loopp2sh);
+					if(addrarr.includes(Object.keys(historyreturn)[i])){
+						keylabel = parsepair.label;
+					}
+				}
+			 				
+				outhtml += '<tr><td><input type="text" class="wideinput" value="'+Object.keys(historyreturn)[i]+'" id="'+i+'"></td><td><input type="number" value="'+historyreturn[Object.keys(historyreturn)[i]].balance+'" readonly></td><td><input type="number" value="'+historyreturn[Object.keys(historyreturn)[i]].received+'" readonly></td><td><input type="text" value="'+historyreturn[Object.keys(historyreturn)[i]].first_seen_receiving+'" readonly></td><td><input type="text" value="'+historyreturn[Object.keys(historyreturn)[i]].last_seen_spending+'" readonly></td><td><input type="text" value="'+keylabel+'" readonly></td></tr>';
+			 }
+			 
+			 outhtml += '</table>';
+			 
+			 $("#txhist").html(outhtml);
 			  
 			},
 			statusCode: {
@@ -528,6 +563,23 @@ function bech32Input(){
 }
 
 
+</script>
+<script>
+var ws = new WebSocket("wss://api-pub.bitfinex.com/ws/2");
+ws.onopen = function(){
+  ws.send(JSON.stringify({"event":"subscribe", "channel":"ticker", "pair":"BTCUSD"}))
+};
+ws.onmessage = function(msg){
+  var response = JSON.parse(msg.data);
+  var hb = response[1];
+  if(hb !== "hb"){
+	var pricenow = response[1][0];
+	var balnow = document.getElementById("walletbal").value;
+	var usdbal = balnow * pricenow;
+	usdbal = usdbal.toFixed(2);
+    document.title = "$" + usdbal;
+  }
+};
 </script>
 </body>
 </html>
