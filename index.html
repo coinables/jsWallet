@@ -495,10 +495,16 @@ function savePair(){
 	var nativesw = document.getElementById("nativesw").value;
 	var p2shsw = document.getElementById("p2shsw").value;
 	var pairlabel = document.getElementById("pairlabel").value;
-	var addrObj = {label:pairlabel,wif:pk,p2pkh:legacy,bech32:nativesw,p2sh:p2shsw}
-	var stlen = allStorage().length;
-	window.localStorage.setItem(stlen, JSON.stringify(addrObj));
-	console.log(JSON.parse(localStorage.getItem(stlen)));
+	if(![pk, legacy, nativesw, p2shsw].every(Boolean)){
+		//empty address fields will break the API calls, dont allow blanks
+		alert('Private Key or Addresses cannot be blank');
+	} else {
+		var addrObj = {label:pairlabel,wif:pk,p2pkh:legacy,bech32:nativesw,p2sh:p2shsw}
+		var stlen = allStorage().length;
+		window.localStorage.setItem(stlen, JSON.stringify(addrObj));
+		console.log(JSON.parse(localStorage.getItem(stlen)));
+	}
+	
 }
 
 isshowpairs = false;
