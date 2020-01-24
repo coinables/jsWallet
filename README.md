@@ -1,5 +1,7 @@
 # jsWallet
  simple bitcoin javascript wallet with UTXO selection
+ 
+ Demo: https://coinables.github.io/wallet/index.html
 
 Download or clone the repository and run the index.html file with your browser of choice. 
 
